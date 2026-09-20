@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<!-- ===================================================
+     PRODUCTS HEADER & BREADCRUMBS
+=================================================== -->
+<section class="products-header">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'products' %}" class="breadcrumb-item {% if not current_category or current_category == 'All' %}active{% endif %}">Products</a>
+            {% if current_category and current_category != 'All' %}
+                <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+                <span class="breadcrumb-item active">{{ current_category }}</span>
+            {% endif %}
+        </nav>
+
+        <div class="products-header__content">
+            <h1 class="products-header__title">
+                {% if search_query %}
+                    Search Results for <span class="highlight">"{{ search_query }}"</span>
+                {% elif current_category and current_category != 'All' %}
+                    {{ current_category }}
+                {% else %}
+                    Explore Our Products
+                {% endif %}
+            </h1>
+            <p class="products-header__subtitle">
+                Browse our curated collection of top-rated items with exclusive prices and fast delivery.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ===================================================
+     PRODUCTS CATALOG SECTION
+=================================================== -->
+<section class="products-catalog section">
+    <div class="container">
+
+        <!-- Controls Bar: Category Pills, Search, Sort -->
+        <div class="products-controls">
+            <!-- Category Filter Pills -->
+            <div class="category-pills" role="tablist" aria-label="Category Filters">
+                {% for cat in categories %}
+                    <a href="?category={{ cat|urlencode }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                       class="category-pill {% if current_category == cat or current_category|lower == cat|lower %}active{% endif %}"
+                       role="tab"
+                       aria-selected="{% if current_category == cat or current_category|lower == cat|lower %}true{% else %}false{% endif %}">
+                        {% if cat == 'All' %}<i class="ri-grid-fill"></i>{% endif %}
+                        {% if cat == 'Electronics' %}<i class="ri-macbook-line"></i>{% endif %}
+                        {% if cat == 'Fashion' %}<i class="ri-shirt-line"></i>{% endif %}
+                        {% if cat == 'Footwear' %}<i class="ri-footprint-line"></i>{% endif %}
+                        {% if cat == 'Home & Decor' %}<i class="ri-home-4-line"></i>{% endif %}
+                        {% if cat == 'Beauty' %}<i class="ri-sparkles-line"></i>{% endif %}
+                        {% if cat == 'Accessories' %}<i class="ri-handbag-line"></i>{% endif %}
+                        <span>{{ cat }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <!-- Toolbar: Results Count & Sort Dropdown -->
+            <div class="products-toolbar">
+                <div class="products-count">
+                    <span>Showing <strong>{{ total_count }}</strong> product{{ total_count|pluralize }}</span>
+                </div>
+
+                <form method="GET" action="{% url 'products' %}" class="products-sort-form" id="sort-form">
+                    {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+                    {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                    <label for="sort-select" class="sort-label">Sort by:</label>
+                    <div class="select-wrapper">
+                        <select name="sort" id="sort-select" class="sort-select" onchange="document.getElementById('sort-form').submit();">
+                            <option value="default" {% if current_sort == 'default' %}selected{% endif %}>Default</option>
+                            <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line select-arrow"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Active Filters Indicator / Reset -->
+        {% if search_query or current_category and current_category != 'All' or current_sort and current_sort != 'default' %}
+            <div class="active-filters">
+                <span class="active-filters__label">Active Filters:</span>
+                {% if search_query %}
+                    <a href="?{% if current_category %}category={{ current_category|urlencode }}&{% endif %}{% if current_sort %}sort={{ current_sort }}{% endif %}" class="filter-tag">
+                        Search: "{{ search_query }}" <i class="ri-close-line"></i>
+                    </a>
+                {% endif %}
+                {% if current_category and current_category != 'All' %}
+                    <a href="?{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if current_sort %}sort={{ current_sort }}{% endif %}" class="filter-tag">
+                        Category: {{ current_category }} <i class="ri-close-line"></i>
+                    </a>
+                {% endif %}
+                {% if current_sort and current_sort != 'default' %}
+                    <a href="?{% if current_category %}category={{ current_category|urlencode }}&{% endif %}{% if search_query %}q={{ search_query|urlencode }}{% endif %}" class="filter-tag">
+                        Sort: {{ current_sort }} <i class="ri-close-line"></i>
+                    </a>
+                {% endif %}
+                <a href="{% url 'products' %}" class="clear-all-filters">Clear All</a>
+            </div>
+        {% endif %}
+
+
+        <!-- Product Grid -->
+        {% if products %}
+            <div class="products-grid" id="products-grid">
+                {% for product in products %}
+                    <article class="product-card reveal-scale" style="--delay: {{ forloop.counter0|add:1 }}00ms" aria-label="{{ product.name }}">
+                        <div class="product-card__img-wrap">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{{ product.get_image_url }}" alt="{{ product.name }}" class="product-card__img" loading="lazy">
+                            </a>
+
+                            {% if product.discount > 0 %}
+                                <span class="product-card__badge">-{{ product.discount }}%</span>
+                            {% endif %}
+
+                            <!-- Stock Badge -->
+                            <span class="stock-badge stock-badge--{% if product.stock <= 0 %}out{% elif product.stock <= 5 %}low{% else %}in{% endif %}">
+                                {{ product.stock_status }}
+                            </span>
+
+                            <button class="product-card__wishlist" aria-label="Add {{ product.name }} to wishlist" id="wish-{{ product.id }}">
+                                <i class="ri-heart-line"></i>
+                            </button>
+
+                            <div class="product-card__overlay">
+                                <button class="btn btn--primary btn--sm product-card__cart-btn"
+                                        aria-label="Add {{ product.name }} to cart"
+                                        id="cart-product-{{ product.id }}"
+                                        data-product-id="{{ product.id }}"
+                                        {% if product.stock <= 0 %}disabled{% endif %}>
+                                    <i class="ri-shopping-cart-2-line"></i>
+                                    {% if product.stock <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-card__info">
+                            <span class="product-card__category">{{ product.category }}</span>
+                            <h3 class="product-card__name">
+                                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                            </h3>
+
+                            <div class="product-card__rating" aria-label="{{ product.rating }} stars">
+                                <i class="ri-star-fill"></i>
+                                <span class="rating-value">{{ product.rating }}</span>
+                            </div>
+
+                            <div class="product-card__price">
+                                <span class="price-current">${{ product.price }}</span>
+                                {% if product.original_price %}
+                                    <span class="price-old">${{ product.original_price }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="product-card__actions">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn--outline btn--sm btn--full product-card__details-btn">
+                                    View Details <i class="ri-arrow-right-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State UI -->
+            <div class="empty-state reveal-fade-up">
+                <div class="empty-state__icon">
+                    <i class="ri-search-eye-line"></i>
+                </div>
+                <h3 class="empty-state__title">No Products Found</h3>
+                <p class="empty-state__sub">
+                    We couldn't find any products matching your criteria{% if search_query %} for <strong>"{{ search_query }}"</strong>{% endif %}. Try checking for spelling errors or clearing your filters.
+                </p>
+                <a href="{% url 'products' %}" class="btn btn--primary btn--lg">
+                    <i class="ri-refresh-line"></i> View All Products
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

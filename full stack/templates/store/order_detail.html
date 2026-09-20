@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="order-detail-section section">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb" style="margin-bottom: var(--space-6);">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'my_orders' %}" class="breadcrumb-item">My Orders</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <span class="breadcrumb-item active">Order #SE-{{ order.id|stringformat:"05d" }}</span>
+        </nav>
+
+        <div class="order-detail-card reveal-fade-up">
+
+            <div class="order-header-row">
+                <div>
+                    <h1 class="order-title">Order #SE-{{ order.id|stringformat:"05d" }}</h1>
+                    <p class="order-sub"><i class="ri-time-line"></i> Placed on {{ order.created_at|date:"F j, Y — g:i A" }}</p>
+                </div>
+                <div class="status-badge status-badge--{{ order.status|lower }}">
+                    {{ order.status }}
+                </div>
+            </div>
+
+            <div class="order-details-grid" style="margin-top: var(--space-8);">
+                <!-- Items Table -->
+                <div class="order-items-col">
+                    <h3 class="col-title">Items in this Order</h3>
+                    <table class="cart-table cart-table--simple">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td class="cart-item-product">
+                                        <div class="cart-item-meta">
+                                            {% if item.product %}
+                                                <a href="{% url 'product_detail' item.product.id %}" class="cart-item-title">{{ item.product_name }}</a>
+                                            {% else %}
+                                                <span class="cart-item-title">{{ item.product_name }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>${{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td style="font-weight: 700; color: var(--color-navy);">${{ item.get_total|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Shipping & Total Summary -->
+                <div class="order-shipping-col">
+                    <h3 class="col-title">Shipping &amp; Payment</h3>
+                    <div class="address-box">
+                        <strong>{{ order.full_name }}</strong>
+                        <p>{{ order.address }}</p>
+                        <p>{{ order.city }}, {{ order.state }} — {{ order.pincode }}</p>
+                        <p><i class="ri-phone-line"></i> {{ order.phone }}</p>
+                        <p><i class="ri-mail-line"></i> {{ order.email }}</p>
+                        <p style="margin-top: 8px;"><strong>Payment:</strong> {{ order.payment_method }}</p>
+                    </div>
+
+                    <div class="order-total-summary">
+                        <div class="summary-line">
+                            <span>Subtotal</span>
+                            <span>${{ order.subtotal|floatformat:2 }}</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Shipping Fee</span>
+                            <span>${{ order.shipping_fee|floatformat:2 }}</span>
+                        </div>
+                        <div class="summary-line summary-line--total">
+                            <span>Total Paid</span>
+                            <span class="total-price">${{ order.total_amount|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-detail-footer-actions">
+                <a href="{% url 'my_orders' %}" class="btn btn--ghost">
+                    <i class="ri-arrow-left-line"></i> Back to My Orders
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

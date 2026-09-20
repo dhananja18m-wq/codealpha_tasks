@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="my-orders-section section">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb" style="margin-bottom: var(--space-6);">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <span class="breadcrumb-item active">My Orders</span>
+        </nav>
+
+        <h1 class="page-title" style="font-size: var(--font-size-3xl); font-weight: 800; color: var(--color-navy); margin-bottom: var(--space-8);">
+            My Orders
+        </h1>
+
+        {% if orders %}
+            <div class="orders-list">
+                {% for order in orders %}
+                    <div class="order-card reveal-fade-up">
+                        <div class="order-card-header">
+                            <div>
+                                <h3 class="order-card-id">Order #SE-{{ order.id|stringformat:"05d" }}</h3>
+                                <span class="order-card-date"><i class="ri-calendar-line"></i> {{ order.created_at|date:"F j, Y — g:i A" }}</span>
+                            </div>
+                            <div class="order-card-header-right">
+                                <span class="status-badge status-badge--{{ order.status|lower }}">{{ order.status }}</span>
+                            </div>
+                        </div>
+
+                        <div class="order-card-body">
+                            <div class="order-card-items-preview">
+                                {% for item in order.items.all|slice:":3" %}
+                                    <div class="item-preview-chip">
+                                        <i class="ri-shopping-bag-3-line"></i>
+                                        <span>{{ item.quantity }}x {{ item.product_name }}</span>
+                                    </div>
+                                {% endfor %}
+                                {% if order.items.count > 3 %}
+                                    <span class="more-items-chip">+{{ order.items.count|add:"-3" }} more</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="order-card-total">
+                                <span>Total Amount:</span>
+                                <strong>${{ order.total_amount|floatformat:2 }}</strong>
+                            </div>
+
+                            <div class="order-card-action">
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn--outline btn--sm">
+                                    View Order Details <i class="ri-arrow-right-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty Orders State -->
+            <div class="empty-state reveal-fade-up">
+                <div class="empty-state__icon">
+                    <i class="ri-inbox-archive-line"></i>
+                </div>
+                <h2 class="empty-state__title">No Orders Found</h2>
+                <p class="empty-state__sub">
+                    You haven't placed any orders with ShopEase yet. Browse our catalog and start shopping today!
+                </p>
+                <a href="{% url 'products' %}" class="btn btn--primary btn--lg">
+                    <i class="ri-shopping-bag-line"></i> Browse Products
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

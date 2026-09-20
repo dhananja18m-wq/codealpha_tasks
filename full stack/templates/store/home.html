@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopEase – Discover Products You'll Love{% endblock %}
+
+{% block content %}
+
+<!-- ===================================================
+     HERO SECTION
+=================================================== -->
+<section class="hero" id="home" aria-label="Hero Banner">
+    <div class="hero__bg-shapes" aria-hidden="true">
+        <div class="shape shape--1"></div>
+        <div class="shape shape--2"></div>
+        <div class="shape shape--3"></div>
+        <div class="shape shape--orbit"></div>
+    </div>
+
+    <div class="container hero__inner">
+        <!-- Left: Text Content -->
+        <div class="hero__content" id="hero-content">
+            <span class="hero__badge" id="hero-badge">
+                <i class="ri-fire-line"></i> New Season, New Deals
+            </span>
+            <h1 class="hero__title" id="hero-title">
+                Discover Products<br>
+                <span class="hero__title-accent">You'll Love</span>
+            </h1>
+            <p class="hero__subtitle" id="hero-subtitle">
+                Shop smarter. Find your favorites.<br>Get them delivered — fast &amp; hassle-free.
+            </p>
+            <div class="hero__stats" id="hero-stats">
+                <div class="stat">
+                    <span class="stat__number">50K+</span>
+                    <span class="stat__label">Products</span>
+                </div>
+                <div class="stat__divider" aria-hidden="true"></div>
+                <div class="stat">
+                    <span class="stat__number">200K+</span>
+                    <span class="stat__label">Customers</span>
+                </div>
+                <div class="stat__divider" aria-hidden="true"></div>
+                <div class="stat">
+                    <span class="stat__number">4.9★</span>
+                    <span class="stat__label">Rating</span>
+                </div>
+            </div>
+            <div class="hero__cta" id="hero-cta">
+                <a href="#featured" class="btn btn--primary btn--lg" id="hero-shop-btn">
+                    <i class="ri-shopping-bag-line"></i> Shop Now
+                </a>
+                <a href="#categories" class="btn btn--outline btn--lg" id="hero-explore-btn">
+                    Explore Products <i class="ri-arrow-right-line"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Right: Visual -->
+        <div class="hero__visual" id="hero-visual" aria-label="Hero product showcase">
+            <div class="hero__image-wrap">
+                <img src="{% static 'images/hero_products.jpg' %}" alt="Premium products showcase – headphones, smartwatch, and smartphone" class="hero__img" id="hero-img" loading="eager">
+                <!-- Floating accent cards -->
+                <div class="float-card float-card--tl" aria-hidden="true">
+                    <i class="ri-truck-line"></i>
+                    <span>Free Delivery</span>
+                </div>
+                <div class="float-card float-card--br" aria-hidden="true">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Secure Pay</span>
+                </div>
+                <div class="float-card float-card--discount" aria-hidden="true">
+                    <span class="discount-num">50%</span>
+                    <span class="discount-label">OFF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero scroll indicator -->
+    <a href="#categories" class="hero__scroll-indicator" aria-label="Scroll to categories">
+        <span class="scroll-dot"></span>
+    </a>
+</section>
+
+<!-- ===================================================
+     TRUST BADGES
+=================================================== -->
+<section class="trust-bar" aria-label="Why ShopEase">
+    <div class="container trust-bar__inner">
+        <div class="trust-item reveal-fade-up">
+            <div class="trust-icon"><i class="ri-truck-fast-line"></i></div>
+            <div class="trust-text">
+                <strong>Free Shipping</strong>
+                <span>On orders over $49</span>
+            </div>
+        </div>
+        <div class="trust-item reveal-fade-up" style="--delay: 0.1s">
+            <div class="trust-icon"><i class="ri-refund-2-line"></i></div>
+            <div class="trust-text">
+                <strong>Easy Returns</strong>
+                <span>30-day return policy</span>
+            </div>
+        </div>
+        <div class="trust-item reveal-fade-up" style="--delay: 0.2s">
+            <div class="trust-icon"><i class="ri-secure-payment-line"></i></div>
+            <div class="trust-text">
+                <strong>Secure Payment</strong>
+                <span>256-bit SSL encryption</span>
+            </div>
+        </div>
+        <div class="trust-item reveal-fade-up" style="--delay: 0.3s">
+            <div class="trust-icon"><i class="ri-customer-service-2-line"></i></div>
+            <div class="trust-text">
+                <strong>24/7 Support</strong>
+                <span>Always here for you</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================================================
+     POPULAR CATEGORIES
+=================================================== -->
+<section class="categories section" id="categories" aria-label="Popular Categories">
+    <div class="container">
+        <div class="section-header reveal-fade-up">
+            <div>
+                <p class="section-eyebrow">Browse By</p>
+                <h2 class="section-title">Popular Categories</h2>
+            </div>
+            <a href="#" class="link-view-all" id="view-all-categories">View All <i class="ri-arrow-right-s-line"></i></a>
+        </div>
+
+        <div class="categories__grid" id="categories-grid" role="list">
+
+            <div class="category-card reveal-fade-up" style="--delay:0.05s" role="listitem" tabindex="0" aria-label="Electronics category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#EFF6FF"/>
+                        <rect x="18" y="26" width="44" height="28" rx="4" fill="#3B82F6" opacity=".9"/>
+                        <rect x="26" y="56" width="28" height="4" rx="2" fill="#1D4ED8"/>
+                        <rect x="22" y="30" width="36" height="20" rx="2" fill="#BFDBFE"/>
+                        <circle cx="40" cy="40" r="5" fill="#3B82F6"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Electronics</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.10s" role="listitem" tabindex="0" aria-label="Fashion category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#FFF1F2"/>
+                        <path d="M30 22l-8 10h8v26h20V32h8l-8-10c-2 2-4 3-10 3s-8-1-10-3z" fill="#F43F5E" opacity=".9"/>
+                        <path d="M32 32h16v22H32z" fill="#FFE4E6"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Fashion</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.15s" role="listitem" tabindex="0" aria-label="Home and Decor category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#F0FDF4"/>
+                        <path d="M40 20L18 40h6v22h32V40h6L40 20z" fill="#22C55E" opacity=".9"/>
+                        <rect x="32" y="48" width="16" height="14" rx="2" fill="#BBF7D0"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Home &amp; Decor</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.20s" role="listitem" tabindex="0" aria-label="Beauty category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#FDF4FF"/>
+                        <ellipse cx="40" cy="44" rx="14" ry="16" fill="#A855F7" opacity=".9"/>
+                        <rect x="36" y="22" width="8" height="16" rx="4" fill="#D8B4FE"/>
+                        <ellipse cx="40" cy="22" rx="6" ry="4" fill="#A855F7"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Beauty</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.25s" role="listitem" tabindex="0" aria-label="Grocery category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#F0FFF4"/>
+                        <path d="M28 30h24l-4 20H32L28 30z" fill="#16A34A" opacity=".9"/>
+                        <path d="M26 30h28" stroke="#15803D" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="34" cy="54" r="3" fill="#166534"/>
+                        <circle cx="46" cy="54" r="3" fill="#166534"/>
+                        <path d="M22 26h4l2 4" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/>
+                        <!-- fruit -->
+                        <circle cx="48" cy="22" r="5" fill="#EF4444"/>
+                        <path d="M48 17v-3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Grocery</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.30s" role="listitem" tabindex="0" aria-label="Footwear category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#FFF7ED"/>
+                        <path d="M16 50c0 0 10-18 28-18c10 0 16 6 20 10H16z" fill="#F97316" opacity=".9"/>
+                        <rect x="16" y="50" width="48" height="8" rx="4" fill="#EA580C"/>
+                        <path d="M36 32c0-4 2-6 4-6s4 2 4 6" stroke="#FED7AA" stroke-width="2"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Footwear</span>
+            </div>
+
+            <div class="category-card reveal-fade-up" style="--delay:0.35s" role="listitem" tabindex="0" aria-label="Accessories category">
+                <div class="category-card__circle">
+                    <svg class="cat-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <circle cx="40" cy="40" r="40" fill="#FFFBEB"/>
+                        <rect x="26" y="34" width="28" height="20" rx="4" fill="#F59E0B" opacity=".9"/>
+                        <rect x="30" y="30" width="8" height="8" rx="2" fill="#D97706"/>
+                        <rect x="42" y="30" width="8" height="8" rx="2" fill="#D97706"/>
+                        <rect x="36" y="40" width="8" height="8" rx="1" fill="#FEF3C7"/>
+                        <circle cx="40" cy="44" r="2" fill="#F59E0B"/>
+                    </svg>
+                </div>
+                <span class="category-card__name">Accessories</span>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===================================================
+     FEATURED PRODUCTS
+=================================================== -->
+<section class="featured section" id="featured" aria-label="Featured Products">
+    <div class="container">
+        <div class="section-header reveal-fade-up">
+            <div>
+                <p class="section-eyebrow">Handpicked For You</p>
+                <h2 class="section-title">Today's Best Deals</h2>
+            </div>
+            <a href="{% url 'products' %}" class="link-view-all" id="view-all-products">View All <i class="ri-arrow-right-s-line"></i></a>
+        </div>
+
+        <!-- Carousel Wrapper -->
+        <div class="carousel-container" id="product-carousel-container">
+            <div class="products-track" id="products-track" aria-label="Product carousel">
+
+                {% for product in featured_products %}
+                    <article class="product-card reveal-scale" aria-label="{{ product.name }}">
+                        <div class="product-card__img-wrap">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{{ product.get_image_url }}" alt="{{ product.name }}" class="product-card__img" loading="lazy">
+                            </a>
+                            {% if product.discount > 0 %}
+                                <span class="product-card__badge">-{{ product.discount }}%</span>
+                            {% endif %}
+                            <button class="product-card__wishlist" aria-label="Add {{ product.name }} to wishlist" id="wish-home-{{ product.id }}">
+                                <i class="ri-heart-line"></i>
+                            </button>
+                            <div class="product-card__overlay">
+                                <button class="btn btn--primary btn--sm product-card__cart-btn" aria-label="Add {{ product.name }} to cart" id="cart-home-{{ product.id }}" data-product-id="{{ product.id }}" {% if product.stock <= 0 %}disabled{% endif %}>
+                                    <i class="ri-shopping-cart-2-line"></i> {% if product.stock <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-card__info">
+                            <p class="product-card__category">{{ product.category }}</p>
+                            <h3 class="product-card__name">
+                                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                            </h3>
+                            <div class="product-card__rating" aria-label="{{ product.rating }} stars">
+                                <i class="ri-star-fill"></i>
+                                <span class="rating-value">{{ product.rating }}</span>
+                            </div>
+                            <div class="product-card__price">
+                                <span class="price-current">${{ product.price }}</span>
+                                {% if product.original_price %}
+                                    <span class="price-old">${{ product.original_price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+
+            </div><!-- /products-track -->
+
+            <!-- Carousel Controls -->
+            <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Previous products">
+                <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Next products">
+                <i class="ri-arrow-right-s-line"></i>
+            </button>
+        </div>
+
+        <!-- Dots -->
+        <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Product carousel navigation"></div>
+    </div>
+</section>
+
+<!-- ===================================================
+     PROMOTIONAL BANNERS
+=================================================== -->
+<section class="promos section" aria-label="Promotional Banners">
+    <div class="container">
+        <div class="section-header reveal-fade-up">
+            <div>
+                <p class="section-eyebrow">Limited Time</p>
+                <h2 class="section-title">Exclusive Offers</h2>
+            </div>
+        </div>
+
+        <div class="promos__grid">
+
+            <!-- Banner 1: Summer Collection -->
+            <article class="promo-card promo-card--summer reveal-slide-left" aria-label="Summer Collection sale">
+                <div class="promo-card__bg">
+                    <img src="{% static 'images/banner_summer.jpg' %}" alt="Summer Collection – bright fashion items" class="promo-card__img" loading="lazy">
+                    <div class="promo-card__gradient"></div>
+                </div>
+                <div class="promo-card__content">
+                    <span class="promo-card__tag">Summer Collection</span>
+                    <h3 class="promo-card__title">Sun-Ready<br>Styles</h3>
+                    <p class="promo-card__sub">Up to <strong>40% OFF</strong> on seasonal fashion</p>
+                    <a href="#" class="btn btn--white promo-card__btn" id="promo-summer-btn">Shop Collection <i class="ri-arrow-right-line"></i></a>
+                </div>
+            </article>
+
+            <!-- Banner 2: Electronics -->
+            <article class="promo-card promo-card--tech reveal-fade-up" aria-label="New Electronics launch">
+                <div class="promo-card__bg">
+                    <img src="{% static 'images/banner_electronics.jpg' %}" alt="New Electronics – latest tech gadgets" class="promo-card__img" loading="lazy">
+                    <div class="promo-card__gradient"></div>
+                </div>
+                <div class="promo-card__content">
+                    <span class="promo-card__tag promo-card__tag--blue">New Tech</span>
+                    <h3 class="promo-card__title">Next-Gen<br>Gadgets</h3>
+                    <p class="promo-card__sub">Explore the latest in <strong>Electronics</strong></p>
+                    <a href="#" class="btn btn--white promo-card__btn" id="promo-tech-btn">Explore Now <i class="ri-arrow-right-line"></i></a>
+                </div>
+            </article>
+
+            <!-- Banner 3: Fashion Sale -->
+            <article class="promo-card promo-card--fashion reveal-slide-right" aria-label="Fashion sale">
+                <div class="promo-card__bg">
+                    <img src="{% static 'images/banner_fashion.jpg' %}" alt="Fashion Sale – clothing and accessories" class="promo-card__img" loading="lazy">
+                    <div class="promo-card__gradient"></div>
+                </div>
+                <div class="promo-card__content">
+                    <span class="promo-card__tag promo-card__tag--pink">Fashion Sale</span>
+                    <h3 class="promo-card__title">Style<br>Redefined</h3>
+                    <p class="promo-card__sub">Premium fashion at <strong>50% OFF</strong></p>
+                    <a href="#" class="btn btn--white promo-card__btn" id="promo-fashion-btn">Shop Fashion <i class="ri-arrow-right-line"></i></a>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===================================================
+     BRANDS / TRUST STRIP
+=================================================== -->
+<section class="brands section" aria-label="Featured Brands">
+    <div class="container">
+        <p class="brands__label reveal-fade-up">Trusted Brands</p>
+        <div class="brands__track reveal-fade-up" style="--delay:0.1s" aria-label="Brands we carry">
+            <div class="brand-item"><i class="ri-apple-fill"></i> Apple</div>
+            <div class="brand-item"><i class="ri-samsung-fill"></i> Samsung</div>
+            <div class="brand-item">&#9670; Nike</div>
+            <div class="brand-item">&#9650; Adidas</div>
+            <div class="brand-item"><i class="ri-dell-fill"></i> Dell</div>
+            <div class="brand-item">&#10022; Sony</div>
+            <div class="brand-item">&#9670; Zara</div>
+            <div class="brand-item">&#9711; Chanel</div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================================================
+     NEWSLETTER CTA STRIP
+=================================================== -->
+<section class="newsletter-cta section reveal-fade-up" aria-label="Newsletter subscription">
+    <div class="container newsletter-cta__inner">
+        <div class="newsletter-cta__text">
+            <h2 class="newsletter-cta__title">Get Exclusive Deals in Your Inbox</h2>
+            <p class="newsletter-cta__sub">Join 200,000+ shoppers and never miss a deal.</p>
+        </div>
+        <form class="newsletter-cta__form" id="newsletter-cta-form" novalidate aria-label="Newsletter signup CTA">
+            <input type="email" class="newsletter-cta__input" id="newsletter-cta-email" placeholder="Enter your email…" aria-label="Email address" required>
+            <button type="submit" class="btn btn--primary" id="newsletter-cta-submit">
+                <i class="ri-mail-send-line"></i> Subscribe Free
+            </button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

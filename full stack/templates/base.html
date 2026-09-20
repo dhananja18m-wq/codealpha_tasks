@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShopEase – Shop smarter. Find your favorites. Get them delivered fast with the best deals on electronics, fashion, home decor, and more.">
+    <title>{% block title %}{{ page_title|default:"ShopEase – Discover Products You'll Love" }}{% endblock %}</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Remix Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- ShopEase Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <header class="navbar" id="navbar" role="banner">
+        <div class="navbar__inner container">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="navbar__logo" aria-label="ShopEase Home">
+                <span class="logo-icon"><i class="ri-shopping-bag-3-fill"></i></span>
+                <span class="logo-text">Shop<span class="logo-accent">Ease</span></span>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="navbar__links" aria-label="Main Navigation">
+                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" id="nav-home">Home</a>
+                <a href="{% url 'products' %}" class="nav-link {% if request.resolver_match.url_name == 'products' or request.resolver_match.url_name == 'product_detail' %}active{% endif %}" id="nav-products">Products</a>
+                <a href="{% url 'home' %}#categories" class="nav-link" id="nav-categories">Categories</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'my_orders' %}" class="nav-link {% if request.resolver_match.url_name == 'my_orders' or request.resolver_match.url_name == 'order_detail' %}active{% endif %}" id="nav-orders">My Orders</a>
+                {% endif %}
+            </nav>
+
+            <!-- Search Box -->
+            <form action="{% url 'products' %}" method="GET" class="navbar__search" role="search">
+                <i class="ri-search-line search-icon" aria-hidden="true"></i>
+                <input type="search" name="q" value="{{ search_query|default:'' }}" id="search-input" class="search-input" placeholder="Search for products…" aria-label="Search products">
+            </form>
+
+            <!-- Actions: Cart, Login/Register / User Dropdown -->
+            <div class="navbar__actions">
+                <a href="{% url 'cart_detail' %}" class="btn-icon cart-btn" id="cart-btn" aria-label="Shopping cart, {{ cart_count|default:0 }} items">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    <span class="cart-badge" id="cart-badge" aria-live="polite">{{ cart_count|default:0 }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                    <div class="user-menu">
+                        <span class="user-greeting" title="{{ user.username }}"><i class="ri-user-smile-fill"></i> {{ user.username }}</span>
+                        <a href="{% url 'logout' %}" class="btn btn--ghost btn--sm" id="logout-btn"><i class="ri-logout-box-r-line"></i> Logout</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn--ghost" id="login-btn">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn--primary" id="register-btn">Register</a>
+                {% endif %}
+            </div>
+
+            <!-- Hamburger (mobile) -->
+            <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile Navigation" aria-hidden="true">
+            <nav class="mobile-nav">
+                <a href="{% url 'home' %}" class="mobile-nav-link" id="mnav-home">Home</a>
+                <a href="{% url 'products' %}" class="mobile-nav-link" id="mnav-products">Products</a>
+                <a href="{% url 'cart_detail' %}" class="mobile-nav-link" id="mnav-cart">Cart ({{ cart_count|default:0 }})</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'my_orders' %}" class="mobile-nav-link" id="mnav-orders">My Orders</a>
+                {% endif %}
+            </nav>
+            <form action="{% url 'products' %}" method="GET" class="mobile-search">
+                <input type="search" name="q" value="{{ search_query|default:'' }}" placeholder="Search products…" aria-label="Mobile search" id="mobile-search-input">
+                <button type="submit" aria-label="Search"><i class="ri-search-line"></i></button>
+            </form>
+            <div class="mobile-actions">
+                {% if user.is_authenticated %}
+                    <span class="mobile-user-greeting"><i class="ri-user-smile-line"></i> Signed in as {{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="btn btn--ghost btn--full" id="m-logout">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn--ghost btn--full" id="m-login">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn--primary btn--full" id="m-register">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== FLASH MESSAGES BANNER ===== -->
+    {% if messages %}
+        <div class="messages-container container">
+            {% for message in messages %}
+                <div class="alert alert--{{ message.tags|default:'info' }}">
+                    <i class="alert-icon {% if message.tags == 'error' %}ri-error-warning-line{% elif message.tags == 'success' %}ri-checkbox-circle-line{% elif message.tags == 'warning' %}ri-alarm-warning-line{% else %}ri-information-line{% endif %}"></i>
+                    <span class="alert-message">{{ message }}</span>
+                    <button class="alert-close" onclick="this.parentElement.remove();" aria-label="Close message"><i class="ri-close-line"></i></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- ===== PAGE CONTENT ===== -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer" id="about">
+        <div class="footer__top container">
+
+            <!-- Brand -->
+            <div class="footer__col footer__brand">
+                <a href="{% url 'home' %}" class="footer__logo" aria-label="ShopEase">
+                    <span class="logo-icon"><i class="ri-shopping-bag-3-fill"></i></span>
+                    <span class="logo-text">Shop<span class="logo-accent">Ease</span></span>
+                </a>
+                <p class="footer__desc">Your ultimate destination for premium products. Shop smarter, live better — everything you need, delivered to your door.</p>
+                <div class="footer__social">
+                    <a href="#" class="social-link" aria-label="Facebook"><i class="ri-facebook-fill"></i></a>
+                    <a href="#" class="social-link" aria-label="Twitter"><i class="ri-twitter-x-fill"></i></a>
+                    <a href="#" class="social-link" aria-label="Instagram"><i class="ri-instagram-fill"></i></a>
+                    <a href="#" class="social-link" aria-label="YouTube"><i class="ri-youtube-fill"></i></a>
+                </div>
+            </div>
+
+            <!-- Shop Links -->
+            <div class="footer__col">
+                <h4 class="footer__heading">Shop</h4>
+                <ul class="footer__list">
+                    <li><a href="{% url 'products' %}" class="footer__link">All Products</a></li>
+                    <li><a href="{% url 'products' %}?sort=newest" class="footer__link">New Arrivals</a></li>
+                    <li><a href="{% url 'products' %}?sort=rating" class="footer__link">Best Sellers</a></li>
+                    <li><a href="{% url 'cart_detail' %}" class="footer__link">Shopping Cart</a></li>
+                </ul>
+            </div>
+
+            <!-- Customer Service -->
+            <div class="footer__col">
+                <h4 class="footer__heading">Customer Service</h4>
+                <ul class="footer__list">
+                    <li><a href="#" class="footer__link">Contact Us</a></li>
+                    <li><a href="#" class="footer__link">FAQs</a></li>
+                    <li><a href="#" class="footer__link">Shipping &amp; Delivery</a></li>
+                    <li><a href="#" class="footer__link">Returns &amp; Refunds</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'my_orders' %}" class="footer__link">My Orders</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Company -->
+            <div class="footer__col">
+                <h4 class="footer__heading">Company</h4>
+                <ul class="footer__list">
+                    <li><a href="#" class="footer__link">About Us</a></li>
+                    <li><a href="#" class="footer__link">Careers</a></li>
+                    <li><a href="#" class="footer__link">Terms &amp; Conditions</a></li>
+                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer__col footer__newsletter">
+                <h4 class="footer__heading">Newsletter</h4>
+                <p class="footer__newsletter-text">Get exclusive deals, new arrivals, and special offers — straight to your inbox.</p>
+                <form class="newsletter-form" id="newsletter-form" novalidate aria-label="Newsletter signup">
+                    <input type="email" class="newsletter-input" id="newsletter-email" placeholder="Your email address" aria-label="Email address" required>
+                    <button type="submit" class="btn btn--primary newsletter-btn" id="newsletter-submit">Subscribe</button>
+                </form>
+                <p class="footer__newsletter-note"><i class="ri-shield-check-line"></i> We respect your privacy. Unsubscribe anytime.</p>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer__bottom">
+            <div class="container footer__bottom-inner">
+                <p class="footer__copy">&copy; 2024 <strong>ShopEase</strong>. All rights reserved.</p>
+                <div class="footer__payment">
+                    <span class="payment-icon" title="Visa"><i class="ri-visa-line"></i></span>
+                    <span class="payment-icon" title="Mastercard"><i class="ri-mastercard-line"></i></span>
+                    <span class="payment-icon" title="PayPal"><i class="ri-paypal-line"></i></span>
+                    <span class="payment-icon" title="Secure Payment"><i class="ri-secure-payment-line"></i></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ShopEase Main Script -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

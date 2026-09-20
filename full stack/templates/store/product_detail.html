@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<!-- ===================================================
+     PRODUCT DETAIL HERO / CONTAINER
+=================================================== -->
+<section class="product-detail section">
+    <div class="container">
+
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb" style="margin-bottom: var(--space-8);">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'products' %}" class="breadcrumb-item">Products</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'products' %}?category={{ product.category|urlencode }}" class="breadcrumb-item">{{ product.category }}</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <span class="breadcrumb-item active">{{ product.name }}</span>
+        </nav>
+
+        <!-- Main Product Grid: Gallery Left + Details Right -->
+        <div class="product-detail__grid">
+
+            <!-- LEFT: GALLERY & HOVER ZOOM -->
+            <div class="product-detail__gallery reveal-fade-up">
+                <div class="product-detail__img-wrap" id="detail-main-img-wrap">
+                    <img src="{{ product.get_image_url }}" alt="{{ product.name }}" class="product-detail__img" id="detail-main-img">
+                    {% if product.discount > 0 %}
+                        <span class="product-card__badge product-detail__badge">-{{ product.discount }}% OFF</span>
+                    {% endif %}
+                    <span class="zoom-hint"><i class="ri-zoom-in-line"></i> Hover to Zoom</span>
+                </div>
+
+                <!-- Interactive Thumbnails -->
+                <div class="gallery-thumbs" id="gallery-thumbs" role="tablist" aria-label="Product image gallery thumbnails">
+                    <button class="gallery-thumb active" role="tab" aria-selected="true" data-src="{{ product.get_image_url }}" title="Main View">
+                        <img src="{{ product.get_image_url }}" alt="Main View">
+                    </button>
+                    <button class="gallery-thumb" role="tab" aria-selected="false" data-src="{{ product.get_image_url }}" title="Angle View">
+                        <img src="{{ product.get_image_url }}" alt="Angle View">
+                    </button>
+                    <button class="gallery-thumb" role="tab" aria-selected="false" data-src="{{ product.get_image_url }}" title="Detail View">
+                        <img src="{{ product.get_image_url }}" alt="Detail View">
+                    </button>
+                    <button class="gallery-thumb" role="tab" aria-selected="false" data-src="{{ product.get_image_url }}" title="Box View">
+                        <img src="{{ product.get_image_url }}" alt="Box View">
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT: PRODUCT INFORMATION & CTAS -->
+            <div class="product-detail__info reveal-fade-up" style="--delay: 0.15s">
+                <span class="product-detail__category"><i class="ri-price-tag-3-line"></i> {{ product.category }}</span>
+                <h1 class="product-detail__title">{{ product.name }}</h1>
+
+                <!-- Rating & Reviews -->
+                <div class="product-detail__meta">
+                    <div class="product-card__rating" aria-label="{{ product.rating }} stars">
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-half-fill"></i>
+                        <span class="rating-value">{{ product.rating }}</span>
+                    </div>
+                    <span class="meta-divider">•</span>
+                    <span class="review-count"><i class="ri-chat-check-line"></i> {{ review_count }} Verified Reviews</span>
+                </div>
+
+                <!-- Price Block -->
+                <div class="product-detail__price-block">
+                    <div class="product-detail__price">
+                        <span class="price-current">${{ product.price }}</span>
+                        {% if product.original_price %}
+                            <span class="price-old">${{ product.original_price }}</span>
+                        {% endif %}
+                    </div>
+                    {% if savings > 0 %}
+                        <span class="savings-tag"><i class="ri-sparkles-fill"></i> You Save ${{ savings|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Stock Status Bar -->
+                <div class="stock-status-wrapper">
+                    <span class="stock-badge stock-badge--{% if product.stock <= 0 %}out{% elif product.stock <= 5 %}low{% else %}in{% endif %}">
+                        <i class="{% if product.stock <= 0 %}ri-close-circle-line{% elif product.stock <= 5 %}ri-alarm-warning-line{% else %}ri-checkbox-circle-line{% endif %}"></i>
+                        {{ product.stock_status }}
+                    </span>
+                    <span class="stock-count-text">
+                        {% if product.stock > 0 %}
+                            <strong>{{ product.stock }}</strong> unit{{ product.stock|pluralize }} ready to ship
+                        {% else %}
+                            Currently unavailable
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Short Description -->
+                <div class="product-detail__desc">
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <!-- Quantity & Actions Box -->
+                <div class="product-detail__actions-box">
+                    <div class="quantity-wrapper">
+                        <label for="qty-input" class="qty-label">Quantity:</label>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn" id="qty-minus" aria-label="Decrease quantity" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="ri-subtract-line"></i>
+                            </button>
+                            <input type="number" id="qty-input" class="qty-input" value="1" min="1" max="{{ product.stock }}" data-max="{{ product.stock }}" aria-label="Quantity" {% if product.stock <= 0 %}disabled{% endif %}>
+                            <button type="button" class="qty-btn" id="qty-plus" aria-label="Increase quantity" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="ri-add-line"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CTAs -->
+                    <div class="product-detail__cta-row">
+                        <button class="btn btn--primary btn--lg detail-cart-btn"
+                                id="detail-cart-btn"
+                                data-product-id="{{ product.id }}"
+                                data-product-name="{{ product.name }}"
+                                {% if product.stock <= 0 %}disabled{% endif %}>
+                            <i class="ri-shopping-cart-2-line"></i> Add to Cart
+                        </button>
+
+                        <button class="btn btn--white btn--lg detail-buynow-btn"
+                                id="detail-buynow-btn"
+                                data-product-id="{{ product.id }}"
+                                data-product-name="{{ product.name }}"
+                                {% if product.stock <= 0 %}disabled{% endif %}>
+                            <i class="ri-flashlight-line"></i> Buy Now
+                        </button>
+
+                        <button class="detail-wishlist-btn"
+                                id="detail-wishlist-btn"
+                                aria-label="Add {{ product.name }} to Wishlist">
+                            <i class="ri-heart-line"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Store Guarantee Badges -->
+                <div class="detail-guarantees">
+                    <div class="guarantee-item">
+                        <i class="ri-truck-line"></i>
+                        <span>Free Shipping over $49</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="ri-shield-check-line"></i>
+                        <span>1 Year Warranty</span>
+                    </div>
+                    <div class="guarantee-item">
+                        <i class="ri-refresh-line"></i>
+                        <span>30-Day Returns</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'products' %}" class="back-link">
+                    <i class="ri-arrow-left-line"></i> Back to all products
+                </a>
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================
+             TABBED PRODUCT INFORMATION SECTION
+        =================================================== -->
+        <div class="product-tabs-container section reveal-fade-up" style="padding-bottom: 0;">
+            <div class="product-tabs" role="tablist" aria-label="Product Information Tabs">
+                <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-description" id="tab-btn-description">
+                    <i class="ri-file-text-line"></i> Description
+                </button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-specs" id="tab-btn-specs">
+                    <i class="ri-list-check-2"></i> Specifications
+                </button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-shipping" id="tab-btn-shipping">
+                    <i class="ri-truck-fast-line"></i> Shipping &amp; Delivery
+                </button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-returns" id="tab-btn-returns">
+                    <i class="ri-shield-flash-line"></i> Returns &amp; Warranty
+                </button>
+            </div>
+
+            <div class="tab-panels">
+                <!-- Panel 1: Description -->
+                <div class="tab-panel active" id="tab-description" role="tabpanel" aria-labelledby="tab-btn-description">
+                    <h3 class="tab-panel__heading">Product Overview</h3>
+                    <p class="tab-panel__paragraph">
+                        Experience exceptional craftsmanship and performance with <strong>{{ product.name }}</strong>. Designed to fit seamlessly into your daily lifestyle, this item features top-tier durability, premium aesthetics, and user-centric engineering.
+                    </p>
+                    <p class="tab-panel__paragraph">
+                        Whether you are shopping for yourself or searching for the perfect gift, {{ product.name }} delivers outstanding value. Every item is rigorously tested to ensure high standards of quality and satisfaction.
+                    </p>
+                    <ul class="tab-panel__list">
+                        <li><i class="ri-checkbox-circle-fill"></i> Premium build quality &amp; ergonomic design</li>
+                        <li><i class="ri-checkbox-circle-fill"></i> Thoroughly quality tested and inspected</li>
+                        <li><i class="ri-checkbox-circle-fill"></i> Fully backed by 12-month manufacturer warranty</li>
+                    </ul>
+                </div>
+
+                <!-- Panel 2: Specifications -->
+                <div class="tab-panel" id="tab-specs" role="tabpanel" aria-labelledby="tab-btn-specs">
+                    <h3 class="tab-panel__heading">Technical Specifications</h3>
+                    <table class="specs-table">
+                        <tbody>
+                            <tr>
+                                <th>Product Name</th>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>SKU</th>
+                                <td>SE-PROD-{{ product.id|stringformat:"04d" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>{{ product.category }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rating</th>
+                                <td>{{ product.rating }} / 5.0 ({{ review_count }} reviews)</td>
+                            </tr>
+                            <tr>
+                                <th>Stock Availability</th>
+                                <td>{{ product.stock_status }} ({{ product.stock }} units)</td>
+                            </tr>
+                            <tr>
+                                <th>Estimated Delivery</th>
+                                <td>2–3 Business Days</td>
+                            </tr>
+                            <tr>
+                                <th>Warranty</th>
+                                <td>1 Year Standard Manufacturer Warranty</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel 3: Shipping & Delivery -->
+                <div class="tab-panel" id="tab-shipping" role="tabpanel" aria-labelledby="tab-btn-shipping">
+                    <h3 class="tab-panel__heading">Shipping Information</h3>
+                    <p class="tab-panel__paragraph">
+                        We offer fast, reliable shipping across all orders. All packages are carefully packed with protective materials and dispatched within 24 hours of purchase.
+                    </p>
+                    <div class="shipping-cards">
+                        <div class="shipping-card">
+                            <i class="ri-truck-line"></i>
+                            <h4>Standard Delivery</h4>
+                            <p>2 - 4 Business Days ($4.99 or FREE on orders over $49)</p>
+                        </div>
+                        <div class="shipping-card">
+                            <i class="ri-flashlight-line"></i>
+                            <h4>Express Delivery</h4>
+                            <p>1 - 2 Business Days ($9.99)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 4: Returns & Guarantee -->
+                <div class="tab-panel" id="tab-returns" role="tabpanel" aria-labelledby="tab-btn-returns">
+                    <h3 class="tab-panel__heading">Hassle-Free Returns &amp; Warranty</h3>
+                    <p class="tab-panel__paragraph">
+                        Your satisfaction is our top priority. If you are not 100% satisfied with your purchase, you can return it within 30 days for a full refund or exchange — no questions asked.
+                    </p>
+                    <ul class="tab-panel__list">
+                        <li><i class="ri-check-double-line"></i> 30-Day Money-Back Guarantee</li>
+                        <li><i class="ri-check-double-line"></i> Free return shipping labels provided</li>
+                        <li><i class="ri-check-double-line"></i> Dedicated customer support available 24/7</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ===================================================
+             RELATED PRODUCTS SECTION
+        =================================================== -->
+        {% if related_products %}
+            <div class="related-products section reveal-fade-up">
+                <div class="section-header">
+                    <div>
+                        <p class="section-eyebrow">More in {{ product.category }}</p>
+                        <h2 class="section-title">Related Products</h2>
+                    </div>
+                    <a href="{% url 'products' %}?category={{ product.category|urlencode }}" class="link-view-all">View All {{ product.category }} <i class="ri-arrow-right-s-line"></i></a>
+                </div>
+
+                <div class="products-grid">
+                    {% for rel in related_products %}
+                        <article class="product-card reveal-scale" aria-label="{{ rel.name }}">
+                            <div class="product-card__img-wrap">
+                                <a href="{% url 'product_detail' rel.id %}">
+                                    <img src="{{ rel.get_image_url }}" alt="{{ rel.name }}" class="product-card__img" loading="lazy">
+                                </a>
+                                {% if rel.discount > 0 %}
+                                    <span class="product-card__badge">-{{ rel.discount }}%</span>
+                                {% endif %}
+                                <span class="stock-badge stock-badge--{% if rel.stock <= 0 %}out{% elif rel.stock <= 5 %}low{% else %}in{% endif %}">
+                                    {{ rel.stock_status }}
+                                </span>
+                                <button class="product-card__wishlist" aria-label="Add {{ rel.name }} to wishlist" id="wish-rel-{{ rel.id }}">
+                                    <i class="ri-heart-line"></i>
+                                </button>
+                                <div class="product-card__overlay">
+                                    <button class="btn btn--primary btn--sm product-card__cart-btn" aria-label="Add {{ rel.name }} to cart" id="cart-product-rel-{{ rel.id }}" data-product-id="{{ rel.id }}" {% if rel.stock <= 0 %}disabled{% endif %}>
+                                        <i class="ri-shopping-cart-2-line"></i> {% if rel.stock <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-card__info">
+                                <span class="product-card__category">{{ rel.category }}</span>
+                                <h3 class="product-card__name">
+                                    <a href="{% url 'product_detail' rel.id %}">{{ rel.name }}</a>
+                                </h3>
+                                <div class="product-card__rating">
+                                    <i class="ri-star-fill"></i>
+                                    <span class="rating-value">{{ rel.rating }}</span>
+                                </div>
+                                <div class="product-card__price">
+                                    <span class="price-current">${{ rel.price }}</span>
+                                    {% if rel.original_price %}
+                                        <span class="price-old">${{ rel.original_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="product-card__actions">
+                                    <a href="{% url 'product_detail' rel.id %}" class="btn btn--outline btn--sm btn--full product-card__details-btn">
+                                        View Details <i class="ri-arrow-right-line"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

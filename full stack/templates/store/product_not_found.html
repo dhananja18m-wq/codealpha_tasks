@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="section" style="padding-top: calc(var(--navbar-height) + var(--space-12)); padding-bottom: var(--space-20); background: var(--color-bg);">
+    <div class="container">
+        <div class="empty-state reveal-fade-up" style="max-width: 640px; margin: 0 auto; background: white; padding: var(--space-16) var(--space-8); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); text-align: center;">
+            <div class="empty-state__icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; width: 90px; height: 90px; margin: 0 auto var(--space-6); font-size: 2.8rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-error-warning-line"></i>
+            </div>
+            <h1 class="empty-state__title" style="font-size: var(--font-size-3xl); color: var(--color-navy); margin-bottom: var(--space-3);">Product Not Found</h1>
+            <p class="empty-state__sub" style="color: var(--color-gray); font-size: var(--font-size-md); margin-bottom: var(--space-8); line-height: 1.6;">
+                Sorry, the product you are looking for (ID #{{ requested_id }}) does not exist or may have been removed from our catalog.
+            </p>
+            <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'products' %}" class="btn btn--primary btn--lg">
+                    <i class="ri-shopping-bag-line"></i> Browse All Products
+                </a>
+                <a href="{% url 'home' %}" class="btn btn--ghost btn--lg">
+                    <i class="ri-home-4-line"></i> Return to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

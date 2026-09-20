@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="checkout-section section">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb" style="margin-bottom: var(--space-6);">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'cart_detail' %}" class="breadcrumb-item">Cart</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <span class="breadcrumb-item active">Checkout</span>
+        </nav>
+
+        <h1 class="page-title" style="font-size: var(--font-size-3xl); font-weight: 800; color: var(--color-navy); margin-bottom: var(--space-8);">
+            Checkout
+        </h1>
+
+        <form action="{% url 'checkout' %}" method="POST" class="checkout-layout">
+            {% csrf_token %}
+
+            <!-- Left: Shipping Information Form -->
+            <div class="checkout-form-wrap reveal-fade-up">
+                <div class="checkout-card">
+                    <h2 class="checkout-card-title"><i class="ri-map-pin-user-line"></i> Shipping Address</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name">Full Name *</label>
+                            <input type="text" name="full_name" id="full_name" class="form-input" value="{{ user.get_full_name|default:user.username }}" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" name="email" id="email" class="form-input" value="{{ user.email }}" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" name="phone" id="phone" class="form-input" placeholder="+1 (555) 000-0000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <textarea name="address" id="address" class="form-input form-textarea" rows="3" placeholder="Apartment, suite, street address" required></textarea>
+                    </div>
+
+                    <div class="form-row form-row--3col">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" name="city" id="city" class="form-input" placeholder="New York" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State *</label>
+                            <input type="text" name="state" id="state" class="form-input" placeholder="NY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pincode">ZIP / Pincode *</label>
+                            <input type="text" name="pincode" id="pincode" class="form-input" placeholder="10001" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Card -->
+                <div class="checkout-card">
+                    <h2 class="checkout-card-title"><i class="ri-bank-card-line"></i> Payment Method</h2>
+
+                    <div class="payment-options">
+                        <label class="payment-option active">
+                            <input type="radio" name="payment_method" value="Cash on Delivery" checked>
+                            <div class="payment-option-content">
+                                <i class="ri-hand-coin-line payment-icon"></i>
+                                <div>
+                                    <strong>Cash on Delivery / Demo Payment</strong>
+                                    <p>Pay with cash or card upon delivery. No real credit card required.</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Sidebar -->
+            <div class="checkout-summary-wrap reveal-fade-up" style="--delay: 0.15s">
+                <div class="cart-summary-card">
+                    <h2 class="cart-summary-title">Order Items ({{ cart.total_count }})</h2>
+
+                    <div class="checkout-items-list">
+                        {% for item in cart.items %}
+                            <div class="checkout-item">
+                                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="checkout-item-img">
+                                <div class="checkout-item-info">
+                                    <h4 class="checkout-item-name">{{ item.name }}</h4>
+                                    <span class="checkout-item-qty">Qty: {{ item.quantity }} × ${{ item.price }}</span>
+                                </div>
+                                <span class="checkout-item-price">${{ item.item_total|floatformat:2 }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-line" style="margin-top: var(--space-4);">
+                        <span>Subtotal</span>
+                        <span>${{ cart.subtotal|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>Shipping Fee</span>
+                        {% if cart.shipping_fee == 0 %}
+                            <span class="text-success" style="font-weight: 700;">FREE</span>
+                        {% else %}
+                            <span>${{ cart.shipping_fee|floatformat:2 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="summary-line summary-line--total">
+                        <span>Total to Pay</span>
+                        <span class="total-price">${{ cart.grand_total|floatformat:2 }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn--lg btn--full place-order-btn">
+                        <i class="ri-check-double-line"></i> Place Order (${{ cart.grand_total|floatformat:2 }})
+                    </button>
+
+                    <p class="checkout-security-note">
+                        <i class="ri-shield-check-line"></i> By placing an order you agree to ShopEase Terms &amp; Privacy Policy.
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

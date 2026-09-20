@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="cart-section section">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb" style="margin-bottom: var(--space-6);">
+            <a href="{% url 'home' %}" class="breadcrumb-item">Home</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <a href="{% url 'products' %}" class="breadcrumb-item">Products</a>
+            <span class="breadcrumb-separator"><i class="ri-arrow-right-s-line"></i></span>
+            <span class="breadcrumb-item active">Shopping Cart</span>
+        </nav>
+
+        <h1 class="page-title" style="font-size: var(--font-size-3xl); font-weight: 800; color: var(--color-navy); margin-bottom: var(--space-8);">
+            Your Shopping Cart
+        </h1>
+
+        {% if cart.items %}
+            <div class="cart-layout">
+                <!-- Left: Cart Items Table -->
+                <div class="cart-items-wrap">
+                    <!-- Shipping promo progress bar -->
+                    <div class="free-shipping-bar">
+                        {% if cart.free_shipping_eligible %}
+                            <p class="free-shipping-msg text-success">
+                                <i class="ri-checkbox-circle-fill"></i> 🎉 Congratulations! You qualified for <strong>FREE Shipping</strong>.
+                            </p>
+                        {% else %}
+                            <p class="free-shipping-msg">
+                                <i class="ri-truck-line"></i> Add <strong>${{ cart.away_from_free_shipping|floatformat:2 }}</strong> more to unlock <strong>FREE Shipping</strong>!
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart.items %}
+                                <tr>
+                                    <!-- Product Column -->
+                                    <td class="cart-item-product">
+                                        <a href="{% url 'product_detail' item.id %}" class="cart-item-img-link">
+                                            <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-item-img">
+                                        </a>
+                                        <div class="cart-item-meta">
+                                            <span class="cart-item-cat">{{ item.category }}</span>
+                                            <a href="{% url 'product_detail' item.id %}" class="cart-item-title">{{ item.name }}</a>
+                                        </div>
+                                    </td>
+
+                                    <!-- Price Column -->
+                                    <td class="cart-item-price">${{ item.price }}</td>
+
+                                    <!-- Quantity Column -->
+                                    <td class="cart-item-qty">
+                                        <form action="{% url 'cart_update' item.id %}" method="POST" class="cart-qty-form">
+                                            {% csrf_token %}
+                                            <div class="quantity-selector quantity-selector--sm">
+                                                <button type="submit" name="quantity" value="{{ item.quantity|add:-1 }}" class="qty-btn" {% if item.quantity <= 1 %}disabled{% endif %}>
+                                                    <i class="ri-subtract-line"></i>
+                                                </button>
+                                                <input type="number" name="quantity_display" value="{{ item.quantity }}" class="qty-input" readonly>
+                                                <button type="submit" name="quantity" value="{{ item.quantity|add:1 }}" class="qty-btn" {% if item.quantity >= item.max_stock %}disabled{% endif %}>
+                                                    <i class="ri-add-line"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </td>
+
+                                    <!-- Subtotal Column -->
+                                    <td class="cart-item-total">${{ item.item_total|floatformat:2 }}</td>
+
+                                    <!-- Remove Column -->
+                                    <td class="cart-item-remove">
+                                        <a href="{% url 'cart_remove' item.id %}" class="cart-remove-btn" title="Remove item">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="cart-actions-row">
+                        <a href="{% url 'products' %}" class="btn btn--ghost">
+                            <i class="ri-arrow-left-line"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="cart-summary-wrap">
+                    <div class="cart-summary-card">
+                        <h2 class="cart-summary-title">Order Summary</h2>
+
+                        <div class="summary-line">
+                            <span>Subtotal ({{ cart.total_count }} item{{ cart.total_count|pluralize }})</span>
+                            <span>${{ cart.subtotal|floatformat:2 }}</span>
+                        </div>
+
+                        <div class="summary-line">
+                            <span>Shipping Fee</span>
+                            {% if cart.shipping_fee == 0 %}
+                                <span class="text-success" style="font-weight: 700;">FREE</span>
+                            {% else %}
+                                <span>${{ cart.shipping_fee|floatformat:2 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="summary-line summary-line--total">
+                            <span>Total</span>
+                            <span class="total-price">${{ cart.grand_total|floatformat:2 }}</span>
+                        </div>
+
+                        <a href="{% url 'checkout' %}" class="btn btn--primary btn--lg btn--full checkout-btn">
+                            Proceed to Checkout <i class="ri-arrow-right-line"></i>
+                        </a>
+
+                        <div class="cart-trust-notes">
+                            <div class="trust-note-item"><i class="ri-shield-check-line"></i> 256-bit Encrypted Checkout</div>
+                            <div class="trust-note-item"><i class="ri-refund-line"></i> 30-Day Money Back Guarantee</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty Cart State -->
+            <div class="empty-state reveal-fade-up">
+                <div class="empty-state__icon">
+                    <i class="ri-shopping-cart-2-line"></i>
+                </div>
+                <h2 class="empty-state__title">Your Shopping Cart is Empty</h2>
+                <p class="empty-state__sub">
+                    Looks like you haven't added any products to your cart yet. Explore our latest arrivals and awesome deals!
+                </p>
+                <a href="{% url 'products' %}" class="btn btn--primary btn--lg">
+                    <i class="ri-shopping-bag-line"></i> Start Shopping Now
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
